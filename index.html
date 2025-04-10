@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projet Docker - Déploiement Web</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent: #f72585;
+            --dark: #212529;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+        }
+
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.7;
+            scroll-behavior: smooth;
+            position: relative;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 5rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: -50px;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120'%3E%3Cpath fill='%23f8f9fa' d='M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z' opacity='.25'/%3E%3Cpath fill='%23f8f9fa' d='M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z' opacity='.5'/%3E%3Cpath fill='%23f8f9fa' d='M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,233.58-87.57V0Z'/%3E%3C/svg%3E");
+            background-size: cover;
+            z-index: 1;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero h1 {
+            font-size: 2.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        nav {
+            background-color: var(--primary);
+            padding: 1rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        nav ul li a:hover {
+            color: var(--accent);
+        }
+
+        .banner {
+            height: 50vh;
+            width: 100%;
+            background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('img/dock.jpg') center no-repeat;
+            background-size: cover;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .banner .banner-container h1 {
+            font-size: 3em;
+        }
+
+        .banner-container {
+            max-width: 900px;
+            text-align: center;
+        }
+
+        .banner-container p {
+            letter-spacing: 1.5px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 4rem auto;
+            padding: 0 2rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            padding: 2.5rem 4rem;
+            margin-bottom: 2rem;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .titre {
+            text-align: center;
+            color: var(--primary);
+            margin-bottom: 30px;
+            font-size: 2rem;
+            position: relative;
+        }
+
+        .titre::before {
+            content: "";
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            /* Espace entre le texte et la ligne */
+            width: 150px;
+            height: 3px;
+            background-color: var(--primary);
+            /* Couleur personnalisée */
+
+        }
+
+        .card h2 {
+            color: black;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-body {
+            margin-left: 40px;
+        }
+
+        .card h2 i {
+            color: var(--accent);
+        }
+
+        .code-block {
+            background: #2b2d42;
+            color: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+        }
+
+        .code-comment {
+            color: #6c757d;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .screenshot {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .screenshot img {
+            width:100%;
+            height: auto;
+            display: block;
+            transition: transform 0.3s ease;
+        }
+
+        .screenshot:hover img {
+            transform: scale(1.02);
+        }
+
+        .portfolio-btn {
+            display: inline-block;
+            margin-top: 10px;
+            background-color: var(--accent);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+        }
+
+        .scrollTopBtn {
+            z-index: 900;
+            position: fixed;
+            bottom: 0px;
+            right: 20px;
+            height: 40px;
+            width: 40px;
+            border: none;
+            box-shadow: 0px 2px 15px rgba(0, 0, 0, 0.4);
+            bottom: 100px;
+            background-color: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            transition: 0.2s ease;
+            margin: auto;
+            padding: auto;
+        }
+
+        .scrollTopBtn:hover {
+            transform: scale(1.1);
+        }
+
+
+        .portfolio-btn:hover {
+            background-color: #d61e65;
+        }
+
+
+
+        footer {
+            background: var(--dark);
+            color: white;
+            text-align: center;
+            padding: 3rem 2rem;
+            margin-top: 4rem;
+        }
+
+        .team {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .team-member {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem 1.5rem;
+            border-radius: 50px;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .hero {
+                padding: 3rem 1rem;
+            }
+
+            .hero h1 {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Hero Section -->
+    <section class="hero" id="accueil">
+        <div class="hero-content">
+            <h1><i class="fas fa-rocket"></i> Projet Universitaire Docker</h1>
+            <p>Création et déploiement de sites web statiques conteneurisé</p>
+        </div>
+    </section>
+
+    <!-- Navigation -->
+    <nav>
+        <ul>
+            <li><a href="#accueil">Accueil</a></li>
+            <li><a href="#details">Détails Techniques</a></li>
+            <li><a href="#demo">Démo</a></li>
+            <li><a href="#portfolio">À propos de nous </a></li>
+        </ul>
+    </nav>
+
+    <!-- Bannière -->
+    <section class="banner">
+        <div class="banner-container">
+            <h1>Bienvenue dans notre blog.</h1>
+            <p>Découvrez l'univers passionant de la conteneurisation sur Docker. Ce projet a pour but de mettre en œuvre
+                nos compétences en conteneurisation, déploiement et conception de sites web statiques avec un serveur
+                NGINX.</p>
+        </div>
+    </section>
+
+    <div class="scrollTopBtn">
+        <i class="fa-solid fa-arrow-up"></i>
+    </div>
+
+    <div class="container">
+        <!-- Accueil -->
+        <h2 class="titre">C'est quoi Docker ?</h2>
+        <section class="card" id="accueil">
+            <h2><i class="fa-solid fa-person-chalkboard"></i> Présentation de Docker</h2>
+            <div class="card-body">
+                <p>Docker est une technologie de conteneurisation créée en 2013 par Solomon Hykes, au sein de la startup
+                    dotCloud. À l’origine, l’outil servait à isoler des services sur des serveurs de manière légère et
+                    efficace, en s’appuyant sur les conteneurs Linux (LXC). Lorsqu’il est open-sourcé en mars 2013 sous
+                    le nom de Docker, il connaît un succès immédiat grâce à sa simplicité d’utilisation, sa portabilité
+                    et sa rapidité.</p>
+                <p style="margin-top: 1rem;">D'une manière brève, Docker est une plateforme open source qui permet de
+                    créer, déployer et exécuter des applications dans des conteneurs.</p>
+            </div>
+
+            <h2 style="margin-top: 2rem;">🧱 La conteneurisation qu'est-ce-que
+                c'est ?</h2>
+            <div class="card-body">
+                <p>La conteneurisation est une méthode qui permet d’emballer une application avec tout ce dont elle a
+                    besoin pour fonctionner (code, librairies, dépendances, fichiers de config…) dans une unité légère
+                    et portable
+                    appelée "conteneur".</p>
+
+                <p style="margin-top: 1rem;">Contrairement aux machines virtuelles, les conteneurs partagent le système
+                    d’exploitation de l’hôte, ce
+                    qui les rend beaucoup plus rapides et légers.</p>
+            </div>
+
+            <h2 style="margin-top: 2rem;"><i class="fa-solid fa-square-poll-vertical"
+                    style="transform: rotate(180deg);"></i> c'est quoi un conteneur ?</h2>
+            <div class="card-body">
+                <p>Un conteneur est une unité légère, portable et autonome qui regroupe tout ce dont une application a
+                    besoin pour fonctionner : </p>
+
+                <ul>
+                    <li>Code</li>
+                    <li>Librairies</li>
+                    <li>Dépendances</li>
+                    <li>Outils système</li>
+                </ul>
+            </div>
+
+            <h2 style="margin-top: 2rem;"><i class="fa-solid fa-floppy-disk"></i> C'est quoi une image Docker ?</h2>
+            <div class="card-body">
+                <p>Une image Docker est comme un plan de construction ou un modèle figé d’une application. Elle contient
+                    tout ce qu’il faut pour exécuter une application </p>
+
+                <ul>
+                    <li>Le système de fichiers (OS de base comme Debian, Alpine…),</li>
+                    <li>Le code source de l’application,</li>
+                    <li>Les dépendances, bibliothèques, configurations,</li>
+                    <li>Les instructions pour lancer l’application.</li>
+                </ul>
+
+            </div>
+
+            <h2 style="margin-top: 2rem;"><i class="fa-solid fa-circle-question"></i> Différence entre le
+                conteneurisation et la virtualisation ?</h2>
+            <div class="card-body">
+                <h2>La conteneurisation</h2>
+                <ul>
+                    <li>Elle partage le noyau du système d’exploitation (OS) hôte.</li>
+
+                    <li>Chaque conteneur contient uniquement l’application + ses dépendances.</li>
+
+                    <li>Les conteneurs sont légers, rapides à lancer et moins gourmands en ressources.</li>
+
+                    <p style="margin-top: 1rem;">Exemples : Docker, Podman, LXC.</p>
+                </ul>
+
+                <h2 style="margin-top: 1rem;">La virtualisation</h2>
+                <ul>
+                    <li>Elle émule un système d’exploitation complet (avec son propre noyau).</li>
+
+                    <li>Chaque machine virtuelle (VM) embarque un OS complet + l’application.</li>
+
+                    <li>Les VM sont plus lourdes, plus lentes au démarrage et utilisent plus de mémoire/CPU.</li>
+
+                    <p style="margin-top: 1rem;">Exemples : VMware, VirtualBox, Hyper-V</p>
+                </ul>
+            </div>
+
+            <h2 style="margin-top: 2rem;"><i class="fa-solid fa-chart-line"></i> Pourquoi utilisé Docker ?</h2>
+            <div class="card-body">
+                <p>Docker présente de nombreux avantanges tels que</p>
+                <ul>
+                    <li>✅ Portabilité : un conteneur fonctionne de la même manière sur ton PC, un serveur distant ou
+                        dans le
+                        cloud.</li>
+
+                    <li>✅ Isolation : chaque conteneur est indépendant. Pas de conflit de versions entre applications
+                        (ex:
+                        deux projets avec des versions différentes de PHP ou Node.js).</li>
+
+                    <li>✅ Rapidité : les conteneurs démarrent beaucoup plus vite que des machines virtuelles classiques.
+                    </li>
+
+                    <li>✅ Scalabilité : Docker s’intègre très bien avec des outils comme Kubernetes pour gérer des
+                        applications à grande échelle.</li>
+                </ul>
+            </div>
+
+            <h2 style="margin-top: 2rem;"><i class="fa-solid fa-circle-question"
+                    style="color: var(--primary);"></i>Comment ça marche ?</h2>
+            <div class="card-body">
+                <ul>
+                    <li> Tu écris un fichier Dockerfile pour décrire l'environnement de ton app.</li>
+
+                    <li>Tu construis une image Docker à partir de ce fichier.</li>
+
+                    <li>Tu lances cette image dans un conteneur.</li>
+
+                    <li>Tu peux l’exécuter partout sans te soucier de l’environnement local.</li>
+                </ul>
+            </div>
+        </section>
+
+        <h2 class="titre" style="margin-top: 40px;">Cas pratique de la conteneurisation avec Docker</h2>
+
+        <!-- Détails Techniques -->
+        <section class="card" id="details">
+            <h2><i class="fas fa-cogs"></i> Détails Techniques</h2>
+            <p>Dans le ce cas pratique, il sera question de voir en profondeur et dans les moindres détailes comment
+                nous avons conteneuriser notre site web statique conteneurisé notre site web statique.</p>
+            <p style="margin-top: 20px;">Nous avons utilisé une image <strong>NGINX</strong> légère pour héberger notre
+                site statique.</p>
+            <p style="margin-top: 20px;">Dans le dossier où se trouve notre site web, à racine, on crée un fichier
+                <strong>Dockerfile</strong> sans extension et à l'intérieur de ce fichier un saisir les lignes de code
+                suivantes :
+            </p>
+            <div class="code-block">
+                <span class="code-comment"># Dockerfile</span><br>
+                FROM nginx:alpine<br>
+                COPY . /usr/share/nginx/html/<br>
+                COPY nginx.conf /etc/nginx/conf.d/default.conf<br>
+                EXPOSE 80
+            </div>
+            <p>Une fois le fichier enregistré, dans Docker Desktop au niveau du terminal, on accède au répertoire de
+                notre site web ou on tape les commande suivantes :</p>
+            <div class="code-block">
+                <span class="code-comment"># Commandes</span><br>
+                $ docker build -t mes-sites .<br>
+                $ docker run -d -p 8080:80 --name sites mes-sites
+            </div>
+        </section>
+
+        <!-- Démo -->
+        <section class="card" id="demo">
+            <h2><i class="fas fa-laptop-code"></i> Démo</h2>
+            <p>Le site est accessible via <code>http://localhost:8080</code></p>
+
+            <div class="results-grid">
+                <div class="screenshot">
+                    <img src="img/DOCKER.jpg" alt="Capture Projet">
+                    <p style="text-align: center;">Page du projet universitaire</p>
+                </div>
+                <div class="screenshot">
+                    <img src="img/JULES.png" alt="Capture Portfolio">
+                    <p style="text-align: center;">Jules_portefolio</p>
+                </div>
+                <div class="screenshot">
+                    <img src="img/MATE.png" alt="Capture Projet">
+                    <p style="text-align: center;">Marte_portefolio</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Portfolio -->
+        <section class="card" id="portfolio">
+            <h2><i class="fas fa-user-friends"></i> Qui sommes nous ?</h2>
+            <p>Nous sommes deux étudiants en informatique à l’université Ecole IT - Bruxelles, passionnés par le
+                développement web, la conteneurisation et le DevOps.</p>
+            <div class="team">
+                <div class="team-member">
+                    <strong>Jules NGNIPIBEO</strong><br>
+                    <a href="jules_portefolio/index.html" class="portfolio-btn" target="_blank">Voir le portfolio</a>
+                </div>
+                <div class="team-member">
+                    <strong>Ouedraogo Martine</strong><br>
+                    <a href="martine_portefolio/index.html" class="portfolio-btn" target="_blank">Voir le portfolio</a>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <h3>Projet réalisé par</h3>
+        <div class="team">
+            <div class="team-member">Jules NGNIPIBEO</div>
+            <div class="team-member">Ouedraogo Martine</div>
+        </div>
+        <p style="margin-top: 2rem; opacity: 0.8;">Université Ecole IT - Bruxelles - 2025</p>
+    </footer>
+
+    <script>
+        // Rendre la barre de navigation fixe après le scroll
+        window.addEventListener("scroll", function () {
+            const nav = window.document.querySelector("nav")
+            if (window.scrollY > 280) {
+                nav.style.position = "fixed";
+                nav.style.top = "0px";
+                nav.style.width = "100%";
+                nav.style.boxShadow = "0 10px 22px rgba(0, 0, 0, 0.4)"
+            } else {
+                nav.style.position = "relative";
+                nav.style.top = "auto";
+                nav.style.width = "auto";
+                nav.style.boxShadow = "none"
+            }
+        })
+
+        // Fonction pour gérer l'affichage du bouton
+        const scrollTopBtn = window.document.querySelector(".scrollTopBtn");
+
+        window.addEventListener("scroll", function () {
+            if (window.scrollY > 200) {
+                scrollTopBtn.style.display = "flex";
+            } else {
+                scrollTopBtn.style.display = "none";
+            }
+        });
+
+        scrollTopBtn.addEventListener("click", function () {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+    </script>
+</body>
+
+</html>
