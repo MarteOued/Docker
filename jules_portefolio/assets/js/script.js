@@ -64,12 +64,25 @@ document.addEventListener('scroll', () => {
 
   function scrollCarousel(direction) {
     const container = document.getElementById('projects-carousel');
-    const scrollAmount = container.offsetWidth * 0.9; // 90% de la largeur visible
-    container.scrollBy({
-      left: direction * scrollAmount,
-      behavior: 'smooth'
-    });
+    const scrollAmount = container.offsetWidth * 0.9;
+  
+    const maxScrollLeft = container.scrollWidth - container.clientWidth;
+  
+    // Nouvelle position de scroll
+    let newScrollLeft = container.scrollLeft + direction * scrollAmount;
+  
+    if (newScrollLeft >= maxScrollLeft) {
+      // Si on dépasse la fin → retourne au début
+      container.scrollTo({ left: 0, behavior: 'smooth' });
+    } else if (newScrollLeft <= 0) {
+      // Si on dépasse le début → va à la fin
+      container.scrollTo({ left: maxScrollLeft, behavior: 'smooth' });
+    } else {
+      // Scroll normal
+      container.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+    }
   }
+  
 
   // Fonction pour gérer l'affichage du bouton
   const scrollTopBtn = window.document.querySelector(".scrollTopBtn");
